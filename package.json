@@ -1,0 +1,17 @@
+{
+  "name": "experts",
+  "version": "1.0.2",
+  "description": "An opinionated panel of experts implementation using OpenAI's Assistants API",
+  "type": "module",
+  "main": "./src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "experts": "^1.0.2",
+    "readline-sync": "^1.4.10"
+  }
+}
