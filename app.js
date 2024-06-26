@@ -143,19 +143,15 @@ class TripAssistant extends Assistant {
     }
 }
 
-
-
-
-// export OPENAI_API_KEY="sk-proj-Rr699RbvqY2J3U1y24u1T3BlbkFJFlk58JtpVHnw3b3f8zJw"
 const thread = await Thread.create();
 const assistant = await TripAssistant.create({
     model: "gpt-3.5-turbo",
 });
 
 while (true) {
-    let prompt = ReadLine.question("> ");
+    let prompt = ReadLine.question(" 😊 > ");
 
     let output = await assistant.ask(prompt, thread.id);
 
-    console.log(output)
+    console.log(" 🤖 > " + output)
 }
