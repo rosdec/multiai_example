@@ -35,8 +35,8 @@ const currentTrip = new CityList();
 class AddCityTool extends Tool {
     constructor() {
         super(
-            "AddCityTool",
-            "Add a city to the trip",
+            "Add City Tool",
+            "Add a city to the trip plan",
             "This tool add a city to the current trip plan",
             {
                 llm: false,
@@ -66,8 +66,8 @@ class AddCityTool extends Tool {
 class ListCities extends Tool {
     constructor() {
         super(
-            "ListCities",
-            "List all the cities in the current trip",
+            "List Cities",
+            "List all the cities in the current trip plan",
             "This tool list all the cities in the current trip plan",
             {
                 llm: false,
@@ -76,8 +76,8 @@ class ListCities extends Tool {
                         type: "function",
                         function: {
                             name: ListCities.toolName,
-                            description: "List citiess in the current trip.",
-                            parameters: { },
+                            description: "List citiess in the current trip plan.",
+                            parameters: {},
                         },
                     },
                 ],
@@ -85,7 +85,6 @@ class ListCities extends Tool {
     }
 
     async ask() {
-        
         return `Your trip currently has the following cities: ${currentTrip.listCities()} `;
     }
 }
@@ -93,34 +92,41 @@ class ListCities extends Tool {
 class DescribeCityTool extends Tool {
     constructor() {
         super(
-            "DescribeCityTool",
-            "Describe a city",
-            "This tool describes a City with a single sentence",
-        );
-    }
-}
-
-class CurrentWeatherTool extends Tool {
-    constructor() {
-        super(
-            "SuggestCityTool",
-            "Describe a city",
-            "Get the current temperature for a specific location",
+            "Describe City Tool",
+            "Describe a city with a single sentence",
+            `You are coincise assistant that describe a city with a single sentence: do not go into too many details, 
+             it is useful to grasp the "spirit" of the city`,
             {
                 parameters: {
                     type: "object",
                     properties: {
                         city: {
                             "type": "string",
-                            "description": "The city and state, e.g., San Francisco, CA"
+                            "description": "The city, e.g. Salerno"
                         },
-                        unit: {
-                            type: "string",
-                            enum: ["Celsius", "Fahrenheit"],
-                            description: "The temperature unit to use. Infer this from the user's location."
-                        }
                     },
-                    "required": ["location", "unit"]
+                    "required": ["city"]
+                }
+            });
+    }
+}
+
+class ClimateTool extends Tool {
+    constructor() {
+        super(
+            "Climate in a city",
+            "Describe the climate in a given city",
+            "Get the climae for a specific city passed as parameter: do not go in too many details, just a sentence",
+            {
+                parameters: {
+                    type: "object",
+                    properties: {
+                        city: {
+                            "type": "string",
+                            "description": "The city, e.g. Salerno"
+                        },
+                    },
+                    "required": ["city"]
                 }
             });
     }
@@ -129,15 +135,25 @@ class CurrentWeatherTool extends Tool {
 class TripAssistant extends Assistant {
     constructor() {
         super(
-            "TripAssistant",
-            "Conversational trip planner",
-            `You are a trip planner. The human will start his interactions by citing a City. If not then answer with "Sorry I cannot help you with this. I can only plan a trip".
-             You assist the user in planning a trip across different cities.
-             If none of the tools can be useful for the user just say "I can't help you sorry"`,
+            "Conversational Travel Guide Assistant",
+            `The Travel Guide Assistant helps you effortlessly plan and enjoy your trips by 
+             suggesting destinations, creating personalized itineraries, and providing local tips. 
+             It also offers language support and travel advice to ensure a seamless and enjoyable experience.`,
+            `Please act as my Travel Guide Assistant. Your primary task is to help me 
+             plan and enjoy my trip. Focus on suggesting destinations, creating itineraries, 
+             providing local information, translating common phrases, and offering travel tips. 
+             Always ensure that the information you provide is accurate, relevant, and tailored to my preferences. 
+             Avoid off-topic responses and concentrate solely on assisting with travel-related inquiries and tasks
+             If you cannot assist just say "Sorry, I can't help you with this". 
+             You have a set of tools: 
+             - You have specialized tools to handle the trip plan
+             - You have a tool that describe a city with a single sentence
+             - You have a tool that describs how generically is the weather in a city
+             If asked without specifing the city applies all the tools to each city in the trip plan`,
 
         );
         this.addAssistantTool(DescribeCityTool);
-        this.addAssistantTool(CurrentWeatherTool);
+        this.addAssistantTool(ClimateTool);
         this.addAssistantTool(AddCityTool);
         this.addAssistantTool(ListCities);
     }
