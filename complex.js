@@ -1,7 +1,7 @@
 import { Assistant, Tool, Thread } from "experts";
 import ReadLine from "readline-sync";
 
-class CityList {
+class TripPlan {
     constructor() {
         this.cities = [];
     }
@@ -30,7 +30,7 @@ class CityList {
     }
 }
 
-const currentTrip = new CityList();
+const currentTrip = new TripPlan();
 
 class AddCityTool extends Tool {
     constructor() {
@@ -40,20 +40,16 @@ class AddCityTool extends Tool {
             "This tool add a city to the current trip plan",
             {
                 llm: false,
-                parentsTools: [
-                    {
-                        type: "function",
-                        function: {
-                            name: AddCityTool.toolName,
-                            description: "Add a city to the trip.",
-                            parameters: {
-                                type: "object",
-                                properties: { message: { type: "string" } },
-                                required: ["message"],
-                            },
+                parameters: {
+                    type: "object",
+                    properties: {
+                        city: {
+                            "type": "string",
+                            "description": "The city, e.g. Salerno"
                         },
                     },
-                ],
+                    "required": ["city"]
+                }
             });
     }
 
@@ -71,16 +67,6 @@ class ListCities extends Tool {
             "This tool list all the cities in the current trip plan",
             {
                 llm: false,
-                parentsTools: [
-                    {
-                        type: "function",
-                        function: {
-                            name: ListCities.toolName,
-                            description: "List citiess in the current trip plan.",
-                            parameters: {},
-                        },
-                    },
-                ],
             });
     }
 
@@ -94,7 +80,8 @@ class DescribeCityTool extends Tool {
         super(
             "Describe City Tool",
             "Describe a city with a single sentence",
-            `You are coincise assistant that describe a city with a single sentence: do not go into too many details, 
+            `You are coincise assistant that describe a city with a 
+             single sentence: do not go into too many details, 
              it is useful to grasp the "spirit" of the city`,
             {
                 parameters: {
@@ -111,7 +98,7 @@ class DescribeCityTool extends Tool {
     }
 }
 
-class ClimateTool extends Tool {
+class DescribeClimateTool extends Tool {
     constructor() {
         super(
             "Climate in a city",
@@ -153,7 +140,7 @@ class TripAssistant extends Assistant {
 
         );
         this.addAssistantTool(DescribeCityTool);
-        this.addAssistantTool(ClimateTool);
+        this.addAssistantTool(DescribeClimateTool);
         this.addAssistantTool(AddCityTool);
         this.addAssistantTool(ListCities);
     }
